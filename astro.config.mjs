@@ -18,8 +18,11 @@ const getSiteURL = () => {
 
 export default defineConfig({
   site: getSiteURL(),
-  output: 'static', // Changed to static to avoid edge runtime issues
+  output: 'static', // Static output with Cloudflare adapter
   adapter: cloudflare({
+    // Configure for static-only deployment
+    mode: 'directory',
+    functionPerRoute: false, // Disable function generation
     imageService: 'compile',
   }),
   server: {
@@ -37,14 +40,16 @@ export default defineConfig({
   ],
   vite: {
     define: {
-      'import.meta.env.SPOTIFY_CLIENT_ID': JSON.stringify(process.env.SPOTIFY_CLIENT_ID),
-      'import.meta.env.SPOTIFY_CLIENT_SECRET': JSON.stringify(process.env.SPOTIFY_CLIENT_SECRET),
-      'import.meta.env.SPOTIFY_REFRESH_TOKEN': JSON.stringify(process.env.SPOTIFY_REFRESH_TOKEN),
+      'import.meta.env.SPOTIFY_CLIENT_ID': JSON.stringify(process.env.SPOTIFY_CLIENT_ID || ''),
+      'import.meta.env.SPOTIFY_CLIENT_SECRET': JSON.stringify(process.env.SPOTIFY_CLIENT_SECRET || ''),
+      'import.meta.env.SPOTIFY_REFRESH_TOKEN': JSON.stringify(process.env.SPOTIFY_REFRESH_TOKEN || ''),
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production'),
     },
     build: {
+      target: 'es2020',
       chunkSizeWarningLimit: 3000,
       rollupOptions: {
+        // Prevent Node.js modules from being bundled
         external: [
           'stream',
           'util', 
@@ -53,37 +58,38 @@ export default defineConfig({
           'crypto',
           'buffer',
           'process',
-          'node:*'
+          'os',
+          'child_process',
+          'worker_threads',
+          'node:*',
+          /^node:/
         ],
         output: {
+          format: 'es',
           manualChunks: (id) => {
-            // Keystatic dependencies - keep separate
-            if (id.includes('node_modules/@keystatic')) {
-              return 'vendor-keystatic';
+            // Skip Node.js built-ins completely
+            if (id.includes('stream') || 
+                id.includes('util') || 
+                id.includes('fs') ||
+                id.includes('path') ||
+                id.includes('crypto') ||
+                id.includes('buffer')) {
+              return null;
             }
             
-            // React dependencies
-            if (id.includes('node_modules/react') || 
-                id.includes('node_modules/react-dom') || 
-                id.includes('node_modules/scheduler')) {
-              return 'vendor-react';
+            // Keystatic
+            if (id.includes('@keystatic')) {
+              return 'keystatic';
             }
             
-            // UI components
-            if (id.includes('node_modules/@radix-ui') || 
-                id.includes('node_modules/@headlessui')) {
-              return 'vendor-ui-components';
+            // React
+            if (id.includes('react') || id.includes('scheduler')) {
+              return 'react';
             }
             
-            // Exclude problematic packages from bundling
-            if (id.includes('node_modules/reading-time') ||
-                id.includes('node_modules/sanitize-html')) {
-              return 'vendor-excluded';
-            }
-            
-            // Standard dependencies
-            if (id.includes('node_modules/') && !id.includes('astro')) {
-              return 'vendor-dependencies';
+            // Other vendors
+            if (id.includes('node_modules')) {
+              return 'vendor';
             }
           }
         }
@@ -93,28 +99,39 @@ export default defineConfig({
       include: ['react', 'react-dom'],
       exclude: [
         '@keystatic/core',
-        'reading-time',
-        'sanitize-html'
+        'stream',
+        'util',
+        'fs',
+        'path',
+        'crypto',
+        'buffer'
       ],
     },
     ssr: {
+      // Since we're using static output, this won't be used
+      // but keeping it for safety
       external: [
         'stream',
         'util',
-        'fs', 
+        'fs',
         'path',
         'crypto',
         'buffer',
         'process',
-        'node:*',
-        'reading-time',
-        'sanitize-html'
-      ],
-      noExternal: [
-        'react-dom',
-        '@keystatic/core',
-        '@keystatic/astro'
+        'node:*'
       ],
     },
+    resolve: {
+      alias: {
+        // Provide empty modules for Node.js built-ins
+        'stream': 'data:text/javascript,export default {}',
+        'util': 'data:text/javascript,export default {}',
+        'fs': 'data:text/javascript,export default {}',
+        'path': 'data:text/javascript,export default {}',
+        'crypto': 'data:text/javascript,export default {}',
+        'buffer': 'data:text/javascript,export default {}',
+        'process': 'data:text/javascript,export default {}',
+      }
+    }
   },
 });

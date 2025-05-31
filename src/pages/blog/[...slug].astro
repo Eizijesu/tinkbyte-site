@@ -3,26 +3,23 @@ import { getCollection } from 'astro:content';
 import BlogPost from '../../layouts/BlogPost.astro';
 import { calculateReadingTime } from '../../utils/reading-time';
 
-export const prerender = true; // Add this to fix the warning
+// Force static prerendering
+export const prerender = true;
 
 export async function getStaticPaths() {
   const blogEntries = await getCollection('blog');
 
-  // Sort entries by date for better next/prev navigation
   const sortedEntries = [...blogEntries].sort(
     (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
   );
 
   return sortedEntries.map((entry, index) => {
-    // Calculate readingTime from markdown content using our custom utility
     const readingTimeResult = calculateReadingTime(entry.body);
 
-    // Format reading time as Vietnamese string
     let readingTimeStr;
     if (readingTimeResult.minutes < 1) {
       readingTimeStr = 'Dưới 1 phút đọc';
     } else {
-      // Round up and format as "X phút đọc"
       const minutes = Math.ceil(readingTimeResult.minutes);
       readingTimeStr = `${minutes} phút đọc`;
     }
@@ -31,8 +28,8 @@ export async function getStaticPaths() {
       params: { slug: entry.slug },
       props: {
         entry,
-        readingTimeValue: readingTimeStr, // Pass formatted string
-        readingTimeStats: readingTimeResult, // Pass complete statistics
+        readingTimeValue: readingTimeStr,
+        readingTimeStats: readingTimeResult,
         nextPost: index > 0 ? sortedEntries[index - 1] : null,
         prevPost: index < sortedEntries.length - 1 ? sortedEntries[index + 1] : null,
       },
@@ -40,315 +37,5 @@ export async function getStaticPaths() {
   });
 }
 
-const { entry, nextPost, prevPost, readingTimeValue, readingTimeStats } = Astro.props;
-const { Content } = await entry.render();
-
-// Override readingTime from frontmatter if available, otherwise use calculated value
-const finalReadingTime = entry.data.readingTime || readingTimeValue;
+// ... rest of your component
 ---
-
-<BlogPost {...entry.data} readingTime={finalReadingTime}>
-  <!-- Main Content - Enhanced with better typography and spacing -->
-  <div
-    class="prose prose-sm prose-zinc max-w-none dark:prose-invert sm:prose-base prose-headings:scroll-mt-24 prose-headings:font-semibold prose-a:font-medium prose-a:text-zinc-800 prose-a:underline-offset-4 hover:prose-a:text-zinc-600 prose-img:rounded-xl dark:prose-a:text-zinc-300 dark:hover:prose-a:text-zinc-100"
-  >
-    <Content />
-  </div>
-
-  <!-- Next/Previous Navigation - Improved responsive design -->
-  <div
-    class="mt-12 grid grid-cols-1 gap-4 border-t border-zinc-200 pt-8 dark:border-zinc-800 sm:mt-16 sm:gap-6 sm:pt-12 md:grid-cols-2"
-  >
-    {
-      prevPost && (
-        <a
-          href={`/blog/${prevPost.slug}`}
-          class="group relative flex h-full flex-col overflow-hidden rounded-xl border border-zinc-200 p-4 transition-all duration-300 hover:-translate-y-1 hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-800/50 sm:p-6"
-        >
-          <div class="absolute inset-0 bg-gradient-to-r from-zinc-100 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 dark:from-zinc-800 dark:to-transparent" />
-          <span class="relative z-10 mb-1 flex items-center gap-1 text-xs font-medium text-zinc-500 dark:text-zinc-400 sm:mb-2 sm:gap-2 sm:text-sm">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="h-3 w-3 transition-transform duration-300 group-hover:-translate-x-1 sm:h-4 sm:w-4"
-            >
-              <path d="m15 18-6-6 6-6" />
-            </svg>
-            Previous Article
-          </span>
-          <h3 class="line-clamp-2 text-base font-medium text-zinc-900 transition-colors group-hover:text-zinc-700 dark:text-white dark:group-hover:text-zinc-300 sm:text-lg">
-            {prevPost.data.title}
-          </h3>
-        </a>
-      )
-    }
-    {
-      nextPost && (
-        <a
-          href={`/blog/${nextPost.slug}`}
-          class="group relative flex h-full flex-col overflow-hidden rounded-xl border border-zinc-200 p-4 transition-all duration-300 hover:-translate-y-1 hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-800/50 sm:p-6 md:text-right"
-        >
-          <div class="absolute inset-0 bg-gradient-to-l from-zinc-100 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 dark:from-zinc-800 dark:to-transparent" />
-          <span class="relative z-10 mb-1 flex items-center gap-1 text-xs font-medium text-zinc-500 dark:text-zinc-400 sm:mb-2 sm:gap-2 sm:text-sm md:justify-end">
-            Next Article
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="h-3 w-3 transition-transform duration-300 group-hover:translate-x-1 sm:h-4 sm:w-4"
-            >
-              <path d="m9 18 6-6-6-6" />
-            </svg>
-          </span>
-          <h3 class="line-clamp-2 text-base font-medium text-zinc-900 transition-colors group-hover:text-zinc-700 dark:text-white dark:group-hover:text-zinc-300 sm:text-lg">
-            {nextPost.data.title}
-          </h3>
-        </a>
-      )
-    }
-  </div>
-</BlogPost>
-
-<script>
-  // Removing TOC-related functions
-
-  // Add copy buttons to code blocks
-  function initializeCodeCopyButtons() {
-    const codeBlocks = document.querySelectorAll('pre');
-
-    codeBlocks.forEach((block) => {
-      // Skip if already processed by either method
-      if (
-        block.classList.contains('code-block-processed') ||
-        block.classList.contains('enhanced')
-      ) {
-        return;
-      }
-
-      block.classList.add('code-block-processed');
-
-      // Create wrapper if not already wrapped
-      let wrapper;
-      if (
-        block.parentNode.classList.contains('relative') &&
-        block.parentNode.classList.contains('group')
-      ) {
-        wrapper = block.parentNode;
-      } else {
-        wrapper = document.createElement('div');
-        wrapper.className = 'relative group';
-        block.parentNode.insertBefore(wrapper, block);
-        wrapper.appendChild(block);
-      }
-
-      // Add copy button if not already present
-      if (!wrapper.querySelector('.copy-button') && !wrapper.querySelector('.copy-code-button')) {
-        const copyButton = document.createElement('button');
-        copyButton.className =
-          'copy-button absolute top-2 right-2 p-1.5 rounded-md bg-zinc-700/50 hover:bg-zinc-700 text-zinc-200 opacity-0 group-hover:opacity-100 transition-opacity duration-200';
-        copyButton.innerHTML = `
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" />
-          </svg>
-        `;
-
-        copyButton.addEventListener('click', () => {
-          const code = block.querySelector('code').innerText;
-          navigator.clipboard.writeText(code);
-
-          // Show copied feedback
-          copyButton.innerHTML = `
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-            </svg>
-          `;
-
-          setTimeout(() => {
-            copyButton.innerHTML = `
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" />
-              </svg>
-            `;
-          }, 2000);
-        });
-
-        wrapper.appendChild(copyButton);
-      }
-    });
-  }
-
-  // Handle SPA transitions for blog post navigation
-  function setupSPATransitions() {
-    // Handle prev/next navigation links
-    document.querySelectorAll('a[href^="/blog/"]').forEach((link) => {
-      // Skip links that are anchor links or already processed
-      if (link.getAttribute('href').includes('#') || link.hasAttribute('data-spa-handled')) {
-        return;
-      }
-
-      // Mark as handled to avoid duplicate listeners
-      link.setAttribute('data-spa-handled', 'true');
-
-      link.addEventListener('click', (e) => {
-        // Don't handle if modifier keys are pressed (for opening in new tab, etc.)
-        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) {
-          return;
-        }
-
-        e.preventDefault();
-        const targetHref = link.getAttribute('href');
-
-        // Trigger page transition animation
-        const pageTransition = document.getElementById('page-transition');
-        if (pageTransition) {
-          pageTransition.classList.remove('opacity-0');
-          pageTransition.classList.add('opacity-100');
-
-          // Navigate after transition effect
-          setTimeout(() => {
-            window.location.href = targetHref;
-          }, 300);
-        } else {
-          // Fallback if transition element doesn't exist
-          window.location.href = targetHref;
-        }
-      });
-    });
-  }
-
-  // Main initialization function
-  function initializeBlogPost() {
-    // Initialize remaining components
-    initializeCodeCopyButtons();
-    setupSPATransitions();
-
-    // Scroll to hash if present in URL
-    if (window.location.hash) {
-      setTimeout(() => {
-        const element = document.querySelector(window.location.hash);
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      }, 100);
-    }
-  }
-
-  // Initialize on first load
-  document.addEventListener('DOMContentLoaded', initializeBlogPost);
-
-  // Re-initialize when content changes via Astro's view transitions
-  document.addEventListener('astro:page-load', initializeBlogPost);
-
-  // For compatibility with custom transition system
-  document.addEventListener('page-transition-complete', initializeBlogPost);
-</script>
-
-<style>
-  /* Removing TOC-related styles */
-
-  /* Language badge styling */
-  .language-badge {
-    font-family:
-      ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
-      monospace;
-    text-transform: lowercase;
-    letter-spacing: 0.05em;
-  }
-
-  /* Extra small screens */
-  @media (min-width: 480px) {
-    .xs\:inline {
-      display: inline;
-    }
-
-    .xs\:hidden {
-      display: none;
-    }
-  }
-
-  /* Enhanced typography for blog content - Responsive adjustments */
-  .prose {
-    @apply text-zinc-800 dark:text-zinc-200;
-  }
-
-  .prose h1,
-  .prose h2,
-  .prose h3,
-  .prose h4 {
-    @apply font-semibold text-zinc-900 dark:text-zinc-100;
-  }
-
-  .prose h1 {
-    @apply text-2xl sm:text-3xl md:text-4xl;
-  }
-
-  .prose h2 {
-    @apply mb-3 mt-8 border-b border-zinc-200 pb-2 text-xl dark:border-zinc-800 sm:mb-4 sm:mt-12 sm:text-2xl;
-  }
-
-  .prose h3 {
-    @apply mb-2 mt-6 text-lg sm:mb-3 sm:mt-8 sm:text-xl;
-  }
-
-  .prose p {
-    @apply mb-4 text-sm leading-relaxed sm:mb-6 sm:text-base;
-  }
-
-  .prose a {
-    @apply font-medium text-zinc-800 underline decoration-zinc-400 underline-offset-2 transition-colors hover:text-zinc-600 hover:decoration-zinc-600 dark:text-zinc-300 dark:decoration-zinc-600 dark:hover:text-zinc-100 dark:hover:decoration-zinc-400;
-  }
-
-  .prose blockquote {
-    @apply my-4 border-l-4 border-zinc-300 pl-4 italic text-zinc-700 dark:border-zinc-700 dark:text-zinc-300 sm:my-6;
-  }
-
-  .prose code {
-    @apply rounded bg-zinc-100 px-1.5 py-0.5 text-sm font-medium text-zinc-800 dark:bg-zinc-800 dark:text-zinc-200;
-  }
-
-  .prose pre {
-    @apply my-4 overflow-x-auto rounded-lg bg-[#1e293b] p-3 text-xs text-zinc-200 shadow-md dark:bg-[#1e293b] sm:my-6 sm:p-4 sm:text-sm !important;
-  }
-
-  .prose pre code {
-    @apply bg-transparent p-0 text-zinc-200 dark:text-zinc-200 !important;
-  }
-
-  .prose img {
-    @apply mx-auto my-6 h-auto max-w-full rounded-lg shadow-md sm:my-8;
-  }
-
-  .prose ul,
-  .prose ol {
-    @apply my-4 pl-5 sm:my-6 sm:pl-6;
-  }
-
-  .prose li {
-    @apply mb-1 text-sm sm:mb-2 sm:text-base;
-  }
-
-  .prose hr {
-    @apply my-8 border-zinc-200 dark:border-zinc-800 sm:my-10;
-  }
-
-  /* Line clamp for truncating text */
-  .line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-</style>
