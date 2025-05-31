@@ -1,30 +1,40 @@
 import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
-import react from '@astrojs/react'; // Add this line
+import react from '@astrojs/react';
+import markdoc from '@astrojs/markdoc';
+import keystatic from '@keystatic/astro';
+import cloudflare from '@astrojs/cloudflare';
 
-// Determine site URL based on environment
+// Determine site URL for Cloudflare + GitHub setup
 const getSiteURL = () => {
-  // For Vercel production deployment
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`;
+  // For Cloudflare Pages production
+  if (process.env.CF_PAGES_URL) {
+    return process.env.CF_PAGES_URL;
   }
-  // For Vercel preview deployment
-  if (process.env.VERCEL_BRANCH_URL) {
-    return `https://${process.env.VERCEL_BRANCH_URL}`;
+  // For production (your custom domain)
+  if (process.env.NODE_ENV === 'production') {
+    return 'https://tinkbyte.com';
   }
   // For local development
-  return 'http://localhost:4321';
+  return 'http://127.0.0.1:4321';
 };
 
 // https://astro.build/config
 export default defineConfig({
   site: getSiteURL(),
+  output: 'server', // Changed from 'hybrid' to 'server' for Keystatic compatibility
+  adapter: cloudflare(),
+  server: {
+    host: '127.0.0.1',
+    port: 4321,
+  },
   integrations: [
-    tailwind(),
-    react(),
+    tailwind(), 
+    react(), 
+    markdoc(), 
+    keystatic()
   ],
   vite: {
-    // Đảm bảo biến môi trường được chuyển đến client
     define: {
       'import.meta.env.SPOTIFY_CLIENT_ID': JSON.stringify(process.env.SPOTIFY_CLIENT_ID),
       'import.meta.env.SPOTIFY_CLIENT_SECRET': JSON.stringify(process.env.SPOTIFY_CLIENT_SECRET),
