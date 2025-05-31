@@ -3,8 +3,7 @@ import { getCollection } from 'astro:content';
 import BlogPost from '../../layouts/BlogPost.astro';
 import { calculateReadingTime } from '../../utils/reading-time';
 
-// Force static prerendering
-export const prerender = true;
+export const prerender = true; // THIS LINE IS CRITICAL
 
 export async function getStaticPaths() {
   const blogEntries = await getCollection('blog');
@@ -14,6 +13,7 @@ export async function getStaticPaths() {
   );
 
   return sortedEntries.map((entry, index) => {
+    // Use our custom reading time function
     const readingTimeResult = calculateReadingTime(entry.body);
 
     let readingTimeStr;
@@ -37,5 +37,5 @@ export async function getStaticPaths() {
   });
 }
 
-// ... rest of your component
+// ... rest of your component remains the same
 ---
