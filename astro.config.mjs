@@ -3,7 +3,7 @@ import tailwind from '@astrojs/tailwind';
 import react from '@astrojs/react';
 import markdoc from '@astrojs/markdoc';
 import keystatic from '@keystatic/astro';
-import cloudflare from '@astrojs/cloudflare';
+// Remove this import: import cloudflare from '@astrojs/cloudflare';
 
 const getSiteURL = () => {
   if (process.env.CF_PAGES_URL) {
@@ -17,10 +17,22 @@ const getSiteURL = () => {
 
 export default defineConfig({
   site: getSiteURL(),
-  output: 'static', // This MUST be static
-  adapter: cloudflare({
-    imageService: 'compile',
-  }),
+  output: 'static', // Keep this as static
+  // Remove the adapter configuration entirely
+  // adapter: cloudflare({
+  //   imageService: 'compile',
+  // }),
+  
+  // For image optimization in static mode:
+  image: {
+    service: {
+      entrypoint: 'astro/assets/services/sharp',
+      config: {
+        mode: 'compile' // This replaces imageService: 'compile'
+      }
+    }
+  },
+  
   server: {
     host: '127.0.0.1',
     port: 4321,
