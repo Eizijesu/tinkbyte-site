@@ -1,27 +1,29 @@
 import rss from '@astrojs/rss';
 import { getCollection } from 'astro:content';
-import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+import type { APIContext } from 'astro';
 
-// Change back to uppercase GET to match what Astro is expecting in newer versions
-export async function GET(context) {
+export async function GET(context: APIContext) {
   const posts = await getCollection('blog');
   
-  // Sort posts by date in descending order
+  // Sort posts by publication date (newest first)
   const sortedPosts = posts.sort(
-    (a, b) => new Date(b.data.pubDate).valueOf() - new Date(a.data.pubDate).valueOf()
+    (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
   );
-  
+
   return rss({
-    title: SITE_TITLE,
-    description: SITE_DESCRIPTION,
-    site: context.site,
+    title: 'TinkByte Blog',
+    description: 'Insights on technology, development, and digital innovation',
+    site: context.site ?? 'https://tinkbyte.com',
     items: sortedPosts.map((post) => ({
       title: post.data.title,
       pubDate: post.data.pubDate,
       description: post.data.description,
+      // Use optional chaining and provide fallback
+      author: post.data.author ?? 'TinkByte Team',
       link: `/blog/${post.slug}/`,
-      // Optional: include categories/tags as array
-      categories: post.data.tags || [],
+      content: post.body,
+      categories: post.data.tags ?? [],
     })),
+    customData: `<language>en-us</language>`,
   });
 }
