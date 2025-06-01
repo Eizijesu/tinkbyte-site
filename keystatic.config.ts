@@ -6,7 +6,7 @@ export default config({
     kind: process.env.NODE_ENV === 'development' ? 'local' : 'cloud',
   },
   cloud: {
-    project: 'eizijesu/tinkbyte-site',
+    project: 'eizijesu/tinkbyte-site', // This is all you need!
   },
   collections: {
     posts: collection({
