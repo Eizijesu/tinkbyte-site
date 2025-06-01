@@ -1,16 +1,18 @@
 import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
-import react from '@astrojs/react'; // Add this line
+import react from '@astrojs/react';
+import markdoc from '@astrojs/markdoc';
+import keystatic from '@keystatic/astro';
 
 // Determine site URL based on environment
 const getSiteURL = () => {
-  // For Vercel production deployment
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`;
+  // For production on tinkbyte.com
+  if (process.env.CF_PAGES_URL || process.env.NODE_ENV === 'production') {
+    return 'https://tinkbyte.com';
   }
-  // For Vercel preview deployment
-  if (process.env.VERCEL_BRANCH_URL) {
-    return `https://${process.env.VERCEL_BRANCH_URL}`;
+  // For Cloudflare preview deployments
+  if (process.env.CF_PAGES_BRANCH && process.env.CF_PAGES_BRANCH !== 'main') {
+    return process.env.CF_PAGES_URL || 'https://preview.tinkbyte.com';
   }
   // For local development
   return 'http://localhost:4321';
@@ -19,16 +21,28 @@ const getSiteURL = () => {
 // https://astro.build/config
 export default defineConfig({
   site: getSiteURL(),
+  output: 'static', // Perfect for Cloudflare Pages + Keystatic
   integrations: [
     tailwind(),
     react(),
+    markdoc(),
+    keystatic(),
   ],
   vite: {
-    // Đảm bảo biến môi trường được chuyển đến client
     define: {
-      'import.meta.env.SPOTIFY_CLIENT_ID': JSON.stringify(process.env.SPOTIFY_CLIENT_ID),
-      'import.meta.env.SPOTIFY_CLIENT_SECRET': JSON.stringify(process.env.SPOTIFY_CLIENT_SECRET),
-      'import.meta.env.SPOTIFY_REFRESH_TOKEN': JSON.stringify(process.env.SPOTIFY_REFRESH_TOKEN),
+      // Public environment variables for client-side
+      'import.meta.env.PUBLIC_SITE_URL': JSON.stringify(getSiteURL()),
+    },
+  },
+  // Optimize for static deployment
+  build: {
+    inlineStylesheets: 'auto',
+    assets: 'assets',
+  },
+  // Image optimization for static builds
+  image: {
+    service: {
+      entrypoint: 'astro/assets/services/sharp',
     },
   },
 });

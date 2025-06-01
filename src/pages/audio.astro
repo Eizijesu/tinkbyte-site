@@ -1,0 +1,295 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const pageTitle = 'Audio | TinkByte';
+const pageDescription =
+  'Listen to TinkByte articles and discussions. Audio content for builders on the go.';
+
+const audioFeatures = [
+  {
+    icon: '🎧',
+    title: 'Article Audio',
+    description: 'Listen to our written content in high-quality audio format',
+  },
+  {
+    icon: '🎙️',
+    title: 'Tinker Talks',
+    description: 'In-depth audio interviews with builders and founders',
+  },
+  {
+    icon: '📻',
+    title: 'Weekly Bytes',
+    description: 'Weekly audio summaries of industry trends and insights',
+  },
+];
+---
+
+<Layout title={pageTitle}>
+  <!-- Hero Section -->
+  <section class="theme-transition-all px-4 py-10 sm:px-6 sm:py-16 md:py-20">
+    <div class="relative mx-auto max-w-2xl">
+      <div
+        class="animate-blob theme-transition-bg absolute -left-10 -top-10 h-40 w-40 rounded-full bg-zinc-100 opacity-50 blur-3xl dark:bg-zinc-800/50 sm:-left-20 sm:-top-20 sm:h-64 sm:w-64"
+      >
+      </div>
+      <div
+        class="animate-blob animation-delay-2000 theme-transition-bg absolute -bottom-10 -right-10 h-40 w-40 rounded-full bg-zinc-200 opacity-30 blur-3xl dark:bg-zinc-800/30 sm:-bottom-20 sm:-right-20 sm:h-64 sm:w-64"
+      >
+      </div>
+
+      <div class="relative text-center sm:text-left">
+        <h1
+          class="theme-transition-color hero-text text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-4xl md:text-5xl lg:text-6xl"
+        >
+          <span class="block">Audio content</span>
+          <span class="mt-1 block">for builders</span>
+          <span class="relative mt-1 block">
+            <span class="relative inline-block">
+              on the go.
+              <span
+                class="theme-transition-bg absolute -bottom-1 left-0 h-1 w-full origin-left transform bg-zinc-800 dark:bg-zinc-200"
+              ></span>
+            </span>
+          </span>
+        </h1>
+        <p
+          class="theme-transition-color mx-auto mt-4 max-w-lg text-base leading-relaxed text-zinc-600 dark:text-zinc-400 sm:mx-0 sm:mt-6 sm:text-lg md:mt-8"
+        >
+          Listen to TinkByte insights on your commute, during workouts, or while building. Audio
+          versions of our articles and exclusive discussions.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Audio Features -->
+  <section
+    class="theme-transition-all border-t border-zinc-100 px-4 py-10 dark:border-zinc-800 sm:px-6 sm:py-12 md:py-16"
+  >
+    <div class="mx-auto max-w-4xl">
+      <div
+        class="mb-6 flex flex-col justify-between gap-4 sm:mb-8 sm:flex-row sm:items-center md:mb-12"
+      >
+        <h2
+          class="theme-transition-color text-center text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-left sm:text-2xl md:text-3xl"
+        >
+          What to Expect
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-8 md:gap-12 lg:grid-cols-3">
+        {
+          audioFeatures.map((feature, index) => (
+            <article class="hover-3d theme-transition-element group relative mx-auto flex w-full max-w-sm flex-col items-start sm:mx-0">
+              <div class="theme-transition-bg absolute -inset-x-4 -inset-y-6 z-0 scale-95 bg-zinc-50 opacity-0 transition group-hover:scale-100 group-hover:opacity-100 dark:bg-zinc-800/50 sm:-inset-x-6 sm:rounded-2xl" />
+
+              <div class="relative z-10 mb-4 w-full text-center">
+                <div class="mb-4 text-4xl">{feature.icon}</div>
+                <h3 class="mb-2 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+                  {feature.title}
+                </h3>
+              </div>
+
+              <p class="relative z-10 w-full text-center text-sm text-zinc-600 dark:text-zinc-400">
+                {feature.description}
+              </p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Coming Soon Section -->
+  <section
+    class="theme-transition-all border-t border-zinc-100 px-4 py-10 dark:border-zinc-800 sm:px-6 sm:py-12 md:py-16"
+  >
+    <div class="mx-auto max-w-3xl text-center">
+      <div class="relative">
+        <div
+          class="theme-transition-bg absolute -inset-x-4 -inset-y-6 z-0 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50"
+        >
+        </div>
+        <div class="relative z-10 p-8 sm:p-12">
+          <div class="mb-6 text-4xl sm:text-6xl">🎵</div>
+          <h2
+            class="mb-4 text-xl font-bold text-zinc-900 dark:text-zinc-100 sm:text-2xl md:text-3xl"
+          >
+            Audio Content Coming Soon
+          </h2>
+          <p class="mx-auto mb-8 max-w-2xl leading-relaxed text-zinc-600 dark:text-zinc-400">
+            We're preparing high-quality audio versions of our articles and exclusive audio-first
+            content. Perfect for builders who want to consume insights while coding, commuting, or
+            exercising.
+          </p>
+
+          <div class="mx-auto mb-8 grid max-w-2xl gap-6 md:grid-cols-2">
+            <div class="group relative">
+              <div
+                class="theme-transition-all absolute -inset-x-2 -inset-y-2 z-0 rounded-lg border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900"
+              >
+              </div>
+              <div class="relative z-10 p-6">
+                <h3 class="mb-2 font-semibold text-zinc-900 dark:text-zinc-100">What to Expect</h3>
+                <ul class="space-y-2 text-left text-sm text-zinc-600 dark:text-zinc-400">
+                  <li>• Professional narration of articles</li>
+                  <li>• Exclusive audio interviews</li>
+                  <li>• Weekly trend discussions</li>
+                  <li>• Behind-the-scenes content</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="group relative">
+              <div
+                class="theme-transition-all absolute -inset-x-2 -inset-y-2 z-0 rounded-lg border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900"
+              >
+              </div>
+              <div class="relative z-10 p-6">
+                <h3 class="mb-2 font-semibold text-zinc-900 dark:text-zinc-100">Stay Updated</h3>
+                <p class="mb-4 text-sm text-zinc-600 dark:text-zinc-400">
+                  Be the first to know when our audio content launches.
+                </p>
+                <a
+                  href="/#newsletter"
+                  class="group-link theme-transition-color relative flex min-h-[44px] items-center text-sm font-medium text-zinc-700 transition-colors hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100"
+                >
+                  <span class="relative inline-block overflow-hidden">
+                    <span
+                      class="block transition-transform duration-300 group-hover:-translate-y-full"
+                      >Subscribe</span
+                    >
+                    <span
+                      class="absolute left-0 top-0 translate-y-full whitespace-nowrap transition-transform duration-300 group-hover:translate-y-0"
+                      >Get notified</span
+                    >
+                  </span>
+                  <svg
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    aria-hidden="true"
+                    class="ml-1 h-4 w-4 stroke-current transition-transform duration-300 group-hover:translate-x-1"
+                  >
+                    <path
+                      d="M6.75 5.75 9.25 8l-2.5 2.25"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"></path>
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Social Platform Links -->
+          <div class="border-t border-zinc-200 pt-8 dark:border-zinc-700">
+            <p class="mb-4 text-sm text-zinc-500 dark:text-zinc-400">
+              Follow us for updates on audio content:
+            </p>
+            <div class="flex justify-center gap-4">
+              <a
+                href="https://youtube.com/@tinkbytehq"
+                target="_blank"
+                class="flex min-h-[44px] items-center p-2 text-zinc-400 transition-colors hover:text-red-500"
+              >
+                <span class="sr-only">YouTube</span>
+                <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                  <path
+                    d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"
+                  ></path>
+                </svg>
+              </a>
+              <a
+                href="https://twitter.com/tinkbytehq"
+                target="_blank"
+                class="flex min-h-[44px] items-center p-2 text-zinc-400 transition-colors hover:text-blue-500"
+              >
+                <span class="sr-only">Twitter</span>
+                <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                  <path
+                    d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"
+                  ></path>
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  /* Matching styles from homepage */
+  .animate-blob {
+    animation: blob 7s infinite;
+  }
+
+  .animation-delay-2000 {
+    animation-delay: 2s;
+  }
+
+  @keyframes blob {
+    0% {
+      transform: translate(0px, 0px) scale(1);
+    }
+    33% {
+      transform: translate(30px, -50px) scale(1.1);
+    }
+    66% {
+      transform: translate(-20px, 20px) scale(0.9);
+    }
+    100% {
+      transform: translate(0px, 0px) scale(1);
+    }
+  }
+
+  .hover-3d {
+    transition: transform 0.3s ease;
+  }
+
+  .hover-3d:hover {
+    transform: translateY(-2px);
+  }
+
+  .hero-text span {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity 0.8s ease,
+      transform 0.8s ease;
+  }
+
+  .animate-reveal {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const animateContent = () => {
+      const heroElements = document.querySelectorAll('.hero-text span, .hero-text + p');
+      heroElements.forEach((el, index) => {
+        setTimeout(
+          () => {
+            el.classList.add('animate-reveal');
+          },
+          100 + index * 150
+        );
+      });
+
+      const articles = document.querySelectorAll('article.group');
+      articles.forEach((article, index) => {
+        setTimeout(
+          () => {
+            article.classList.add('animate-reveal');
+          },
+          500 + index * 150
+        );
+      });
+    };
+
+    animateContent();
+  });
+</script>

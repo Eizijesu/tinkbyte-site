@@ -4,484 +4,410 @@ import Layout from '../layouts/Layout.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 
 // Get all blog posts
-const allPosts = await getCollection('blog');
+let allPosts: any[] = [];
+let recentPosts: any[] = [];
+let featuredPost: any = null;
+let gridPosts: any[] = [];
+let allTags: string[] = [];
 
-// Get the 3 most recent posts
-const recentPosts = allPosts
-  .filter(post => !post.data.draft)
-  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
-  .slice(0, 3);
+try {
+  allPosts = await getCollection('blog');
+  
+  // Get the 3 most recent posts
+  recentPosts = allPosts
+    .filter(post => !post.data.draft)
+    .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+    .slice(0, 3);
 
-// Get all unique tags from posts
-const allTags = [...new Set(allPosts.flatMap(post => post.data.tags || []))].slice(0, 5);
+  // Get featured post (most recent)
+  featuredPost = recentPosts[0];
+
+  // Get remaining posts for grid
+  gridPosts = recentPosts.slice(1);
+
+  // Get all unique tags from posts
+  allTags = [...new Set(allPosts.flatMap(post => post.data.tags || []))].slice(0, 6);
+} catch (error) {
+  console.log('Content collection not available, using mock data');
+}
+
+// Mock data for preview (replace with real data when you have content)
+const mockPosts = [
+  {
+    title: "Building Products That Actually Matter",
+    description: "Real insights from the trenches of product development. How constraint-driven innovation creates solutions that work everywhere.",
+    date: "January 18, 2024",
+    readingTime: "8 min read",
+    tags: ["product-insights", "startup-lessons", "global-perspective"],
+    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=400&fit=crop&crop=edges",
+    slug: "building-products-that-matter"
+  },
+  {
+    title: "AI Evolution: Cutting Through the Hype",
+    description: "Practical AI education for builders who value substance over buzzwords. What actually works in real-world applications.",
+    date: "January 15, 2024", 
+    readingTime: "12 min read",
+    tags: ["ai-evolution", "tools", "no-hype"],
+    image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&h=400&fit=crop&crop=edges",
+    slug: "ai-evolution-cutting-hype"
+  },
+  {
+    title: "Tech Culture: The Human Side of Building",
+    description: "Community stories and ethical design discussions. Why culture matters more than code in successful product development.",
+    date: "January 12, 2024",
+    readingTime: "6 min read", 
+    tags: ["tech-culture", "community", "ethics"],
+    image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&h=400&fit=crop&crop=edges",
+    slug: "tech-culture-human-side"
+  }
+];
+
+// Use mock data if no real posts exist
+const displayPosts = recentPosts.length > 0 ? recentPosts : mockPosts;
+const displayFeatured = recentPosts.length > 0 ? featuredPost : mockPosts[0];
 ---
 
-<Layout title="Home | Minimal Blog">
-  <!-- Hero Section with improved mobile responsiveness -->
+<Layout title="TinkByte | The Tech Publication That Cuts Through the Noise">
+  <!-- Hero Section with Magazine-Style Layout -->
   <section class="py-10 sm:py-16 md:py-20 px-4 sm:px-6 theme-transition-all">
-    <div class="max-w-2xl mx-auto relative">
-      <!-- Adjusted blob positions and sizes for better mobile appearance -->
-      <div class="absolute -top-10 sm:-top-20 -left-10 sm:-left-20 w-40 sm:w-64 h-40 sm:h-64 bg-zinc-100 dark:bg-zinc-800/50 rounded-full blur-3xl opacity-50 animate-blob theme-transition-bg"></div>
-      <div class="absolute -bottom-10 sm:-bottom-20 -right-10 sm:-right-20 w-40 sm:w-64 h-40 sm:h-64 bg-zinc-200 dark:bg-zinc-800/30 rounded-full blur-3xl opacity-30 animate-blob animation-delay-2000 theme-transition-bg"></div>
-      
-      <div class="relative text-center sm:text-left">
-        <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 theme-transition-color hero-text">
-          <span class="block">Writing on design,</span>
-          <span class="block mt-1">development, and</span>
-          <span class="block mt-1 relative">
-            <span class="relative inline-block">
-              digital experiences.
-              <span class="absolute -bottom-1 left-0 w-full h-1 bg-zinc-800 dark:bg-zinc-200 transform origin-left theme-transition-bg"></span>
-            </span>
-          </span>
-        </h1>
-        <p class="mt-4 sm:mt-6 md:mt-8 text-base sm:text-lg text-zinc-600 dark:text-zinc-400 leading-relaxed theme-transition-color max-w-lg mx-auto sm:mx-0">
-          Welcome to my corner of the internet. I'm a designer and developer sharing thoughts on creating meaningful digital experiences.
-        </p>
-        <div class="mt-6 sm:mt-8 md:mt-10 flex flex-wrap gap-3 sm:gap-4 md:gap-6 justify-center sm:justify-start">
-          <a 
-            href="/about" 
-            class="group relative inline-flex items-center gap-2 text-sm font-medium text-zinc-900 dark:text-zinc-100 hover:text-zinc-700 dark:hover:text-zinc-300 transition-all duration-300 theme-transition-color min-h-[44px]"
-          >
-            <span>More about me</span>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-            </svg>
-            <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-zinc-800 dark:bg-zinc-200 transition-all duration-300 group-hover:w-full theme-transition-bg"></span>
-          </a>
+    <div class="max-w-7xl mx-auto">
+      <div class="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+        
+        <!-- Hero Content -->
+        <div class="relative order-2 lg:order-1">
+          <!-- Decorative blobs -->
+          <div class="absolute -top-10 -left-10 w-32 h-32 bg-zinc-100 dark:bg-zinc-800/30 rounded-full blur-3xl opacity-50 animate-blob theme-transition-bg"></div>
+          
+          <div class="relative">
+            <!-- TinkByte Badge -->
+            <div class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 mb-6">
+              <span class="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></span>
+              Tech Publication
+            </div>
+            
+            <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 theme-transition-color hero-text mb-6">
+              <span class="block">The tech publication</span>
+              <span class="block mt-1">that cuts through</span>
+              <span class="block mt-1 relative">
+                <span class="relative inline-block">
+                  the noise.
+                  <span class="absolute -bottom-1 left-0 w-full h-1 bg-zinc-800 dark:bg-zinc-200 transform origin-left theme-transition-bg"></span>
+                </span>
+              </span>
+            </h1>
+            
+            <p class="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 leading-relaxed theme-transition-color mb-8 max-w-lg">
+              Authentic insights for builders who value substance over hype. Real experiences from the trenches of product development.
+            </p>
+            
+            <div class="flex flex-wrap gap-4">
+              <a 
+                href="/features" 
+                class="group relative inline-flex items-center gap-2 px-6 py-3 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-md font-medium hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-all duration-300 min-h-[44px]"
+              >
+                <span>Explore Features</span>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                </svg>
+              </a>
+              
+              <a 
+                href="/community" 
+                class="group relative inline-flex items-center gap-2 px-6 py-3 border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 rounded-md font-medium hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all duration-300 min-h-[44px]"
+              >
+                <span>Join Community</span>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Hero Image -->
+        <div class="relative order-1 lg:order-2">
+          <div class="aspect-[4/3] rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 shadow-2xl">
+            <img 
+              src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=600&fit=crop&crop=edges" 
+              alt="Builders collaborating on meaningful tech products"
+              class="w-full h-full object-cover"
+              loading="eager"
+            />
+          </div>
+          
+          <!-- Floating Stats Card -->
+          <div class="absolute -bottom-6 -left-6 bg-white dark:bg-zinc-900 p-6 rounded-xl shadow-lg border border-zinc-200 dark:border-zinc-800 theme-transition-all">
+            <div class="flex items-center gap-4">
+              <div class="text-center">
+                <div class="text-2xl font-bold text-zinc-900 dark:text-zinc-100">50+</div>
+                <div class="text-xs text-zinc-600 dark:text-zinc-400">Builders</div>
+              </div>
+              <div class="w-px h-8 bg-zinc-200 dark:bg-zinc-700"></div>
+              <div class="text-center">
+                <div class="text-2xl font-bold text-zinc-900 dark:text-zinc-100">12</div>
+                <div class="text-xs text-zinc-600 dark:text-zinc-400">Countries</div>
+              </div>
+              <div class="w-px h-8 bg-zinc-200 dark:bg-zinc-700"></div>
+              <div class="text-center">
+                <div class="text-2xl font-bold text-zinc-900 dark:text-zinc-100">0</div>
+                <div class="text-xs text-zinc-600 dark:text-zinc-400">Hype</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Featured Post Section - Improved for mobile -->
-  <section class="py-10 sm:py-12 md:py-16 px-4 sm:px-6 border-t border-zinc-100 dark:border-zinc-800 theme-transition-all">
-    <div class="max-w-3xl mx-auto">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8 md:mb-12">
-        <h2 class="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 theme-transition-color text-center sm:text-left">Recent Posts</h2>
+  <!-- Featured Article Section -->
+  {displayFeatured && (
+    <section class="py-16 px-4 sm:px-6 border-t border-zinc-100 dark:border-zinc-800 theme-transition-all">
+      <div class="max-w-7xl mx-auto">
+        <div class="flex items-center justify-between mb-12">
+          <h2 class="text-2xl sm:text-3xl font-bold text-zinc-900 dark:text-zinc-100">Featured Article</h2>
+          <span class="px-3 py-1 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-xs font-medium rounded-full">
+            Latest
+          </span>
+        </div>
+        
+        <article class="group relative bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden hover:shadow-xl transition-all duration-500">
+          <div class="grid lg:grid-cols-2 gap-0">
+            
+            <!-- Featured Image -->
+            <div class="aspect-[16/10] lg:aspect-auto overflow-hidden">
+              <img 
+                src={displayFeatured.image || "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=500&fit=crop&crop=edges"}
+                alt={displayFeatured.title}
+                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                loading="eager"
+              />
+            </div>
+            
+            <!-- Featured Content -->
+            <div class="p-8 lg:p-12 flex flex-col justify-center">
+              <div class="flex items-center gap-4 text-sm text-zinc-500 dark:text-zinc-400 mb-4">
+                <time dateTime={displayFeatured.date || displayFeatured.data?.pubDate}>
+                  {displayFeatured.date || (displayFeatured.data?.pubDate && new Date(displayFeatured.data.pubDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }))}
+                </time>
+                <span class="w-1 h-1 bg-zinc-400 rounded-full"></span>
+                <span>{displayFeatured.readingTime || "5 min read"}</span>
+              </div>
+              
+              <h3 class="text-2xl lg:text-3xl font-bold text-zinc-900 dark:text-zinc-100 mb-4 group-hover:text-zinc-700 dark:group-hover:text-zinc-300 transition-colors">
+                <a href={displayFeatured.slug ? `/blog/${displayFeatured.slug}` : "#"} class="before:absolute before:inset-0">
+                  {displayFeatured.title || displayFeatured.data?.title}
+                </a>
+              </h3>
+              
+              <p class="text-zinc-600 dark:text-zinc-400 text-lg leading-relaxed mb-6">
+                {displayFeatured.description || displayFeatured.data?.description}
+              </p>
+              
+              <div class="flex flex-wrap gap-2">
+                {(displayFeatured.tags || displayFeatured.data?.tags || []).slice(0, 3).map((tag: string) => (
+                  <span class="px-3 py-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-sm rounded-full">
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+  )}
+
+  <!-- Recent Articles Grid -->
+  <section class="py-16 px-4 sm:px-6 border-t border-zinc-100 dark:border-zinc-800 theme-transition-all">
+    <div class="max-w-7xl mx-auto">
+      <div class="flex items-center justify-between mb-12">
+        <h2 class="text-2xl sm:text-3xl font-bold text-zinc-900 dark:text-zinc-100">Latest Insights</h2>
         <a 
           href="/blog" 
-          class="group relative text-sm font-medium text-zinc-900 dark:text-zinc-100 hover:text-zinc-700 dark:hover:text-zinc-300 self-center sm:self-auto theme-transition-color min-h-[44px] flex items-center justify-center"
+          class="group text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
         >
           <span class="flex items-center gap-1">
-            View all posts
+            View all articles
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1">
               <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
             </svg>
           </span>
-          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-zinc-800 dark:bg-zinc-200 transition-all duration-300 group-hover:w-full theme-transition-bg"></span>
         </a>
       </div>
       
-      <!-- Improved grid for better mobile layout -->
-      <div class="grid gap-6 sm:gap-8 md:gap-12 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-        {recentPosts.map((post, index) => (
-          <article class="group relative flex flex-col items-start hover-3d theme-transition-element max-w-sm mx-auto sm:mx-0 w-full">
-            <div class="absolute -inset-x-4 -inset-y-6 z-0 scale-95 bg-zinc-50 dark:bg-zinc-800/50 opacity-0 transition group-hover:scale-100 group-hover:opacity-100 sm:-inset-x-6 sm:rounded-2xl theme-transition-bg"></div>
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {(displayPosts.length > 1 ? displayPosts.slice(1) : mockPosts.slice(1)).map((post: any, index: number) => (
+          <article class="group relative bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
             
-            {post.data.image && (
-              <div class="relative z-10 w-full aspect-video mb-4 overflow-hidden rounded-lg">
-                <img 
-                  src={post.data.image} 
-                  alt={post.data.title}
-                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  loading={index === 0 ? "eager" : "lazy"}
-                  width="400"
-                  height="225"
-                />
-              </div>
-            )}
-            
-            <div class="relative z-10 flex items-center flex-wrap gap-x-3 sm:gap-x-4 gap-y-2 text-xs text-zinc-500 dark:text-zinc-400 theme-transition-color justify-center sm:justify-start w-full">
-              <time datetime={post.data.pubDate.toISOString()} class="font-medium">
-                <FormattedDate date={post.data.pubDate} format="long" />
-              </time>
-              <span class="relative z-10 rounded-full bg-zinc-100 dark:bg-zinc-800 px-2 sm:px-3 py-1 sm:py-1.5 font-medium text-zinc-600 dark:text-zinc-300 theme-transition-all">
-                {post.data.readingTime || `${Math.ceil(post.body.length / 2000)} min read`}
-              </span>
+            <!-- Article Image -->
+            <div class="aspect-[16/10] overflow-hidden">
+              <img 
+                src={post.image || post.data?.image || `https://images.unsplash.com/photo-${1460925895917 + index}?w=600&h=400&fit=crop&crop=edges`}
+                alt={post.title || post.data?.title}
+                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                loading="lazy"
+              />
             </div>
             
-            <h3 class="relative z-10 mt-3 text-lg sm:text-xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 group-hover:text-zinc-700 dark:group-hover:text-zinc-300 transition-colors theme-transition-color text-center sm:text-left w-full">
-              <a href={`/blog/${post.slug}`} class="min-h-[44px] flex items-center justify-center sm:justify-start">
-                <span class="absolute -inset-x-4 -inset-y-2.5 sm:-inset-x-6 sm:-inset-y-4"></span>
-                {post.data.title}
-              </a>
-            </h3>
-            
-            <p class="relative z-10 mt-2 sm:mt-3 text-sm text-zinc-600 dark:text-zinc-400 line-clamp-3 theme-transition-color text-center sm:text-left w-full">
-              {post.data.description}
-            </p>
-            
-            {post.data.tags && post.data.tags.length > 0 && (
-              <div class="relative z-10 mt-3 sm:mt-4 flex flex-wrap gap-2 justify-center sm:justify-start w-full">
-                {post.data.tags.slice(0, 3).map(tag => (
-                  <a 
-                    href={`/tags/${tag}`}
-                    class="inline-flex items-center rounded-full bg-zinc-100 px-2 sm:px-3 py-1 text-xs font-medium text-zinc-800 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700 transition-colors theme-transition-all min-h-[28px]"
-                  >
-                    #{tag}
-                  </a>
-                ))}
-                {post.data.tags.length > 3 && (
-                  <span class="inline-flex items-center rounded-full bg-zinc-50 px-2 py-1 text-xs font-medium text-zinc-500 dark:bg-zinc-800/50 dark:text-zinc-400 theme-transition-all min-h-[28px]">
-                    +{post.data.tags.length - 3} more
-                  </span>
-                )}
+            <!-- Article Content -->
+            <div class="p-6">
+              <div class="flex items-center gap-4 text-xs text-zinc-500 dark:text-zinc-400 mb-3">
+                <time dateTime={post.date || post.data?.pubDate}>
+                  {post.date || (post.data?.pubDate && new Date(post.data.pubDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }))}
+                </time>
+                <span class="w-1 h-1 bg-zinc-400 rounded-full"></span>
+                <span>{post.readingTime || "5 min read"}</span>
               </div>
-            )}
-            
-            <a 
-              href={`/blog/${post.slug}`}
-              class="relative z-10 mt-3 sm:mt-4 flex items-center text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors theme-transition-color mx-auto sm:mx-0 min-h-[44px]"
-            >
-              <span class="relative overflow-hidden inline-block">
-                <span class="group-hover:-translate-y-full block transition-transform duration-300">Read article</span>
-                <span class="absolute top-0 left-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300 whitespace-nowrap">Explore now</span>
-              </span>
-              <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" class="ml-1 h-4 w-4 stroke-current transition-transform duration-300 group-hover:translate-x-1">
-                <path d="M6.75 5.75 9.25 8l-2.5 2.25" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-              </svg>
-            </a>
+              
+              <h3 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-2 group-hover:text-zinc-700 dark:group-hover:text-zinc-300 transition-colors">
+                <a href={post.slug ? `/blog/${post.slug}` : "#"} class="before:absolute before:inset-0">
+                  {post.title || post.data?.title}
+                </a>
+              </h3>
+              
+              <p class="text-sm text-zinc-600 dark:text-zinc-400 line-clamp-3 mb-4">
+                {post.description || post.data?.description}
+              </p>
+              
+              <div class="flex flex-wrap gap-1">
+                {(post.tags || post.data?.tags || []).slice(0, 2).map((tag: string) => (
+                  <span class="px-2 py-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 text-xs rounded">
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+            </div>
           </article>
         ))}
       </div>
     </div>
   </section>
 
-  <!-- Topics/Tags Section - Improved for mobile -->
-  {allTags.length > 0 && (
-    <section class="py-10 sm:py-12 md:py-16 px-4 sm:px-6 border-t border-zinc-100 dark:border-zinc-800 theme-transition-all">
-      <div class="max-w-3xl mx-auto">
-        <h2 class="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 mb-6 sm:mb-8 theme-transition-color text-center sm:text-left">Explore Topics</h2>
+  <!-- Newsletter Section -->
+  <section id="newsletter" class="py-16 px-4 sm:px-6 border-t border-zinc-100 dark:border-zinc-800 theme-transition-all">
+    <div class="max-w-4xl mx-auto text-center">
+      <div class="bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl p-8 lg:p-12">
+        <h2 class="text-2xl lg:text-3xl font-bold text-zinc-900 dark:text-zinc-100 mb-4">
+          Join the TinkByte Community
+        </h2>
+        <p class="text-lg text-zinc-600 dark:text-zinc-400 mb-8 max-w-2xl mx-auto">
+          Get authentic insights delivered to your inbox. No hype, just substance. Join builders from around the world who value practical knowledge over buzzwords.
+        </p>
         
-        <!-- Improved grid layout for mobile -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 max-w-xs sm:max-w-none mx-auto">
-          {allTags.map(tag => {
+        <form class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+          <input 
+            type="email" 
+            placeholder="Enter your email address" 
+            class="flex-1 px-4 py-3 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 dark:placeholder-zinc-400 focus:ring-2 focus:ring-zinc-500 focus:border-transparent outline-none"
+            required
+          />
+          <button 
+            type="submit"
+            class="px-6 py-3 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg font-medium hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors"
+          >
+            Subscribe
+          </button>
+        </form>
+        
+        <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-4">
+          No spam, unsubscribe anytime. Read our <a href="/privacy" class="underline hover:text-zinc-700 dark:hover:text-zinc-300">privacy policy</a>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Topics Section -->
+  {allTags.length > 0 && (
+    <section class="py-16 px-4 sm:px-6 border-t border-zinc-100 dark:border-zinc-800 theme-transition-all">
+      <div class="max-w-7xl mx-auto">
+        <h2 class="text-2xl sm:text-3xl font-bold text-zinc-900 dark:text-zinc-100 mb-12 text-center">
+          Explore by Topic
+        </h2>
+        
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          {allTags.map((tag: string) => {
             const tagCount = allPosts.filter(post => post.data.tags && post.data.tags.includes(tag)).length;
             return (
               <a 
                 href={`/tags/${tag}`}
-                class="group flex flex-col p-3 sm:p-4 md:p-6 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800/70 transition-all duration-300 theme-transition-all min-h-[80px] sm:min-h-[90px]"
+                class="group p-4 text-center rounded-xl border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800/70 transition-all duration-300"
               >
-                <div class="flex items-start justify-between mb-2">
-                  <span class="text-sm font-medium text-zinc-900 dark:text-zinc-100 theme-transition-color mr-2">#{tag}</span>
-                  <span class="text-xs bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 px-2 py-0.5 rounded-full flex-shrink-0 theme-transition-all">
-                    {tagCount} {tagCount === 1 ? 'post' : 'posts'}
-                  </span>
+                <div class="text-sm font-medium text-zinc-900 dark:text-zinc-100 mb-1">#{tag}</div>
+                <div class="text-xs text-zinc-500 dark:text-zinc-400">
+                  {tagCount} article{tagCount !== 1 ? 's' : ''}
                 </div>
-                <p class="text-xs text-zinc-600 dark:text-zinc-400 mt-1 theme-transition-color">
-                  Explore articles about {tag}
-                </p>
               </a>
             )
           })}
-        </div>
-        
-        <div class="mt-6 sm:mt-8 text-center">
-          <a 
-            href="/tags" 
-            class="inline-flex items-center text-sm font-medium text-zinc-900 dark:text-zinc-100 hover:text-zinc-700 dark:hover:text-zinc-300 theme-transition-color min-h-[44px]"
-          >
-            <span>View all topics</span>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 ml-1 transition-transform duration-300 group-hover:translate-x-1">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-            </svg>
-          </a>
         </div>
       </div>
     </section>
   )}
 </Layout>
 
-<script>
-  // Add hover effect for cards on touch devices
-  document.addEventListener('DOMContentLoaded', () => {
-    // Check if it's a touch device
-    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    
-    if (isTouchDevice) {
-      const cards = document.querySelectorAll('.hover-3d');
-      
-      cards.forEach(card => {
-        card.addEventListener('touchstart', () => {
-          card.classList.add('is-touched');
-        });
-        
-        card.addEventListener('touchend', () => {
-          setTimeout(() => {
-            card.classList.remove('is-touched');
-          }, 300);
-        });
-      });
-      
-      // Disable hover animations on touch devices for better performance
-      document.documentElement.classList.add('touch-device');
-    }
-    
-    // Improved viewport height fix for mobile browsers
-    const setVh = () => {
-      const vh = window.innerHeight * 0.01;
-      document.documentElement.style.setProperty('--vh', `${vh}px`);
-    };
-    
-    // Set initial value
-    setVh();
-    
-    // Update on resize and scroll to prevent content shifting
-    window.addEventListener('resize', setVh);
-    
-    // Use a debounced scroll handler to prevent performance issues
-    let scrollTimeout;
-    window.addEventListener('scroll', () => {
-      if (scrollTimeout) {
-        window.cancelAnimationFrame(scrollTimeout);
-      }
-      
-      scrollTimeout = window.requestAnimationFrame(() => {
-        // Lock width during scroll
-        document.body.style.width = '100%';
-        document.body.style.overflowX = 'hidden';
-      });
-    });
-    
-    // Fix for iOS Safari address bar height changes
-    if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
-      // Force the layout to use the initial viewport size
-      document.documentElement.style.setProperty('--initial-vh', `${window.innerHeight * 0.01}px`);
-      
-      // Apply fixed height to sections to prevent resizing
-      const sections = document.querySelectorAll('section');
-      sections.forEach(section => {
-        section.style.width = '100%';
-      });
-    }
-    
-    // Improved theme change handler that preserves scroll position and provides smoother transitions
-    document.addEventListener('themeChanged', () => {
-      // Store current scroll position
-      const scrollPosition = window.scrollY;
-      
-      // Create a temporary overlay for smoother transition
-      const overlay = document.createElement('div');
-      overlay.style.cssText = `
-        position: fixed;
-        inset: 0;
-        background-color: ${document.documentElement.classList.contains('dark') ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'};
-        z-index: 9999;
-        pointer-events: none;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-      `;
-      document.body.appendChild(overlay);
-      
-      // Fade in overlay
-      requestAnimationFrame(() => {
-        overlay.style.opacity = '0.5';
-        
-        // Update theme-transition elements without forcing reflow of entire page
-        requestAnimationFrame(() => {
-          document.querySelectorAll('.theme-transition-all, .theme-transition-bg, .theme-transition-color')
-            .forEach(el => {
-              // Apply a subtle animation instead of a hard reset
-              el.style.transition = 'all 0.5s ease';
-            });
-          
-          // Fade out overlay after transition completes
-          setTimeout(() => {
-            overlay.style.opacity = '0';
-            setTimeout(() => {
-              overlay.remove();
-            }, 300);
-          }, 300);
-        });
-      });
-      
-      // Restore scroll position (prevents jumping to top)
-      if (scrollPosition > 0) {
-        setTimeout(() => {
-          window.scrollTo({
-            top: scrollPosition,
-            behavior: 'auto' // Use 'auto' to prevent animation
-          });
-        }, 10);
-      }
-    });
-    
-    // Fix theme inconsistency issues by checking theme on visibility change
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') {
-        const storedTheme = localStorage.getItem('theme');
-        const currentThemeIsDark = document.documentElement.classList.contains('dark');
-        
-        if (storedTheme === 'dark' && !currentThemeIsDark) {
-          document.documentElement.classList.add('dark');
-        } else if (storedTheme === 'light' && currentThemeIsDark) {
-          document.documentElement.classList.remove('dark');
-        }
-      }
-    });
-    
-    // Add smooth reveal animations for content after loading
-    const animateContent = () => {
-      // Animate hero section
-      const heroElements = document.querySelectorAll('.hero-text span, .hero-text + p, .hero-text ~ div');
-      heroElements.forEach((el, index) => {
-        setTimeout(() => {
-          el.classList.add('animate-reveal');
-        }, 100 + (index * 150));
-      });
-      
-      // Animate posts with staggered delay
-      const articles = document.querySelectorAll('article.group');
-      articles.forEach((article, index) => {
-        setTimeout(() => {
-          article.classList.add('animate-reveal');
-        }, 500 + (index * 150));
-      });
-      
-      // Animate topic cards with staggered delay
-      const topicCards = document.querySelectorAll('a.group.flex.flex-col');
-      topicCards.forEach((card, index) => {
-        setTimeout(() => {
-          card.classList.add('animate-reveal');
-        }, 800 + (index * 100));
-      });
-    };
-    
-    // Run animations after the loading screen is hidden
-    const loadingScreen = document.getElementById('loading-screen');
-    if (loadingScreen) {
-      // Check if loading screen is already hidden (page refresh)
-      if (loadingScreen.style.display === 'none') {
-        animateContent();
-      } else {
-        // Wait for loading screen to hide
-        const observer = new MutationObserver((mutations) => {
-          mutations.forEach((mutation) => {
-            if (mutation.target === loadingScreen && 
-                mutation.type === 'attributes' && 
-                mutation.attributeName === 'style' &&
-                loadingScreen.style.display === 'none') {
-              animateContent();
-              observer.disconnect();
-            }
-          });
-        });
-        
-        observer.observe(loadingScreen, { attributes: true });
-        
-        // Fallback
-        setTimeout(animateContent, 3500);
-      }
-    } else {
-      // If loading screen doesn't exist for some reason
-      animateContent();
-    }
-  });
-  
-  // SPA transition handling for homepage
-  function setupSPATransitions() {
-    // Handle all internal links for SPA transitions
-    document.querySelectorAll('a[href^="/"]').forEach(link => {
-      // Skip links that are anchor links, external links, or already processed
-      if (link.getAttribute('href').includes('#') || 
-          link.getAttribute('target') === '_blank' || 
-          link.hasAttribute('data-spa-handled')) {
-        return;
-      }
-      
-      // Mark as handled to avoid duplicate listeners
-      link.setAttribute('data-spa-handled', 'true');
-      
-      link.addEventListener('click', (e) => {
-        // Don't handle if modifier keys are pressed (for opening in new tab, etc.)
-        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) {
-          return;
-        }
-        
-        e.preventDefault();
-        const targetHref = link.getAttribute('href');
-        
-        // Trigger page transition animation
-        const pageTransition = document.getElementById('page-transition');
-        if (pageTransition) {
-          pageTransition.classList.remove('opacity-0');
-          pageTransition.classList.add('opacity-100');
-          
-          // Navigate after transition effect
-          setTimeout(() => {
-            window.location.href = targetHref;
-          }, 300);
-        } else {
-          // Fallback if transition element doesn't exist
-          window.location.href = targetHref;
-        }
-      });
-    });
-  }
-  
-  // Initialize on first load
-  document.addEventListener('DOMContentLoaded', setupSPATransitions);
-  
-  // Re-initialize when content changes via Astro's view transitions
-  document.addEventListener('astro:page-load', setupSPATransitions);
-  
-  // For compatibility with custom transition system
-  document.addEventListener('page-transition-complete', setupSPATransitions);
-</script>
-
 <style>
-  /* Fix for theme transition issues */
-  :global(:root) {
-    --theme-transition-duration: 0.5s;
-    --theme-transition-timing: ease;
+  /* Magazine-style animations */
+  .animate-blob {
+    animation: blob 7s infinite;
   }
   
-  :global(html), :global(body) {
-    transition: background-color var(--theme-transition-duration) var(--theme-transition-timing);
+  @keyframes blob {
+    0% { transform: translate(0px, 0px) scale(1); }
+    33% { transform: translate(30px, -50px) scale(1.1); }
+    66% { transform: translate(-20px, 20px) scale(0.9); }
+    100% { transform: translate(0px, 0px) scale(1); }
   }
   
-  :global(.theme-transition-all) {
-    transition: all var(--theme-transition-duration) var(--theme-transition-timing);
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
   
-  :global(.theme-transition-bg) {
-    transition: background-color var(--theme-transition-duration) var(--theme-transition-timing);
-  }
-  
-  :global(.theme-transition-color) {
-    transition: color var(--theme-transition-duration) var(--theme-transition-timing);
-  }
-  
-  /* Ensure transitions apply to all theme-related properties */
-  :global(*) {
-    transition-property: background-color, border-color, color, fill, stroke, opacity;
-    transition-duration: var(--theme-transition-duration);
-    transition-timing-function: var(--theme-transition-timing);
-  }
-  
-  /* Remove the forced transition disabling which causes flickering */
-  :global(.theme-switching), :global(.theme-switching *) {
-    /* Use a subtle transition instead of none */
-    transition-duration: 0.3s !important;
-  }
-  
-  /* Content reveal animations */
-  .hero-text span, 
-  .hero-text + p, 
-  .hero-text ~ div,
-  article.group,
-  a.group.flex.flex-col {
+  .hero-text span {
     opacity: 0;
     transform: translateY(20px);
-    transition: opacity 0.8s ease, transform 0.8s ease;
+    animation: slideUp 0.8s ease forwards;
   }
   
-  .animate-reveal {
-    opacity: 1 !important;
-    transform: translateY(0) !important;
-  }
+  .hero-text span:nth-child(1) { animation-delay: 0.1s; }
+  .hero-text span:nth-child(2) { animation-delay: 0.2s; }
+  .hero-text span:nth-child(3) { animation-delay: 0.3s; }
   
-  /* Rest of your existing styles... */
+  @keyframes slideUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 </style>
 
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Animate elements on scroll
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const target = entry.target as HTMLElement;
+          target.style.opacity = '1';
+          target.style.transform = 'translateY(0)';
+        }
+      });
+    }, observerOptions);
+    
+    // Observe all articles
+    document.querySelectorAll('article').forEach(article => {
+      const htmlArticle = article as HTMLElement;
+      htmlArticle.style.opacity = '0';
+      htmlArticle.style.transform = 'translateY(20px)';
+      htmlArticle.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+      observer.observe(article);
+    });
+  });
+</script>

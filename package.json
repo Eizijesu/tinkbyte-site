@@ -1,5 +1,5 @@
 {
-  "name": "minimalist-astro-blog",
+  "name": "tinkbyte-site",
   "type": "module",
   "version": "0.1.0",
   "private": true,
@@ -8,27 +8,26 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "keystatic": "astro dev"
   },
   "dependencies": {
-    "@astrojs/db": "0.15.0",
-    "@astrojs/mdx": "4.3.0",
-    "@astrojs/node": "9.2.2",
+    "@astrojs/markdoc": "0.15.0",
     "@astrojs/react": "4.3.0",
     "@astrojs/rss": "4.0.11",
     "@astrojs/sitemap": "3.4.0",
     "@astrojs/tailwind": "6.0.2",
+    "@keystatic/astro": "5.0.6",
+    "@keystatic/core": "0.5.47",
+    "@types/react": "19.1.6",
+    "@types/react-dom": "19.1.5",
     "astro": "5.8.1",
-    "framer-motion": "12.6.3",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "react-hotkeys-hook": "4.6.1",
-    "react-icons": "5.5.0",
-    "reading-time": "1.5.0",
-    "sanitize-html": "2.15.0",
     "tailwindcss": "^3.3.3"
   },
   "devDependencies": {
+    "@astrojs/ts-plugin": "1.10.4",
     "@tailwindcss/typography": "^0.5.9",
     "prettier": "^3.0.3",
     "prettier-plugin-astro": "^0.12.0",

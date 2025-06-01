@@ -1,0 +1,452 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const pageTitle = 'Community | TinkByte';
+const pageDescription =
+  'Join the TinkByte community of builders, creators, and innovators who value substance over hype.';
+
+const communityValues = [
+  {
+    icon: '🛠️',
+    title: 'Builders First',
+    description:
+      'We prioritize practitioners over pundits. Real experience from people who actually ship products and build companies.',
+  },
+  {
+    icon: '🌍',
+    title: 'Global Perspective',
+    description:
+      'Innovation happens everywhere. We spotlight insights from underrepresented regions and diverse voices in tech.',
+  },
+  {
+    icon: '💡',
+    title: 'Substance Over Hype',
+    description:
+      'No buzzwords, no revolutionary claims. Just honest, practical insights that help you build better products.',
+  },
+  {
+    icon: '🤝',
+    title: 'Community Driven',
+    description:
+      'Our content is shaped by input from actual builders. We create content with our community, not just for them.',
+  },
+];
+
+const engagementOptions = [
+  {
+    icon: '📧',
+    title: 'Subscribe to Our Newsletter',
+    description: 'Get our latest insights delivered to your inbox. No spam, just substance.',
+    cta: 'Subscribe Now',
+    link: '/#newsletter',
+    color:
+      'from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-800',
+  },
+  {
+    icon: '💬',
+    title: 'Follow Us on Social Media',
+    description:
+      'Join daily conversations about building, shipping, and the reality of product development.',
+    cta: 'Follow Us',
+    link: '#social',
+    color:
+      'from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-200 dark:border-green-800',
+  },
+  {
+    icon: '✍️',
+    title: 'Contribute Your Story',
+    description:
+      'Have a build log, failure story, or practical insight to share? We want to hear from builders like you.',
+    cta: 'Get in Touch',
+    link: 'mailto:contribute@tinkbyte.com',
+    color:
+      'from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/20 border-purple-200 dark:border-purple-800',
+  },
+];
+
+const guidelines = {
+  encourage: [
+    'Sharing real experiences and lessons learned',
+    'Honest discussions about failures and iterations',
+    'Practical advice and actionable insights',
+    'Respectful disagreement and diverse perspectives',
+    'Questions about building and shipping products',
+  ],
+  discourage: [
+    'Self-promotion without value',
+    'Buzzword-heavy content without substance',
+    'Theoretical advice without practical experience',
+    'Disrespectful or discriminatory behavior',
+    'Hype-driven claims without evidence',
+  ],
+};
+---
+
+<Layout title={pageTitle}>
+  <!-- Hero Section -->
+  <section class="theme-transition-all px-4 py-10 sm:px-6 sm:py-16 md:py-20">
+    <div class="relative mx-auto max-w-2xl">
+      <div
+        class="animate-blob theme-transition-bg absolute -left-10 -top-10 h-40 w-40 rounded-full bg-zinc-100 opacity-50 blur-3xl dark:bg-zinc-800/50 sm:-left-20 sm:-top-20 sm:h-64 sm:w-64"
+      >
+      </div>
+      <div
+        class="animate-blob animation-delay-2000 theme-transition-bg absolute -bottom-10 -right-10 h-40 w-40 rounded-full bg-zinc-200 opacity-30 blur-3xl dark:bg-zinc-800/30 sm:-bottom-20 sm:-right-20 sm:h-64 sm:w-64"
+      >
+      </div>
+
+      <div class="relative text-center sm:text-left">
+        <h1
+          class="theme-transition-color hero-text text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-4xl md:text-5xl lg:text-6xl"
+        >
+          <span class="block">Join the</span>
+          <span class="mt-1 block">TinkByte</span>
+          <span class="relative mt-1 block">
+            <span class="relative inline-block">
+              community.
+              <span
+                class="theme-transition-bg absolute -bottom-1 left-0 h-1 w-full origin-left transform bg-zinc-800 dark:bg-zinc-200"
+              ></span>
+            </span>
+          </span>
+        </h1>
+        <p
+          class="theme-transition-color mx-auto mt-4 max-w-lg text-base leading-relaxed text-zinc-600 dark:text-zinc-400 sm:mx-0 sm:mt-6 sm:text-lg md:mt-8"
+        >
+          TinkByte isn't just a publication—it's a movement toward more authentic, practical, and
+          globally inclusive tech media.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Community Values -->
+  <section
+    class="theme-transition-all border-t border-zinc-100 px-4 py-10 dark:border-zinc-800 sm:px-6 sm:py-12 md:py-16"
+  >
+    <div class="mx-auto max-w-4xl">
+      <div
+        class="mb-6 flex flex-col justify-between gap-4 sm:mb-8 sm:flex-row sm:items-center md:mb-12"
+      >
+        <h2
+          class="theme-transition-color text-center text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-left sm:text-2xl md:text-3xl"
+        >
+          Our Community Values
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-8 md:gap-12 lg:grid-cols-2">
+        {
+          communityValues.map((value, index) => (
+            <article class="hover-3d theme-transition-element group relative mx-auto flex w-full max-w-sm flex-col items-start sm:mx-0">
+              <div class="theme-transition-bg absolute -inset-x-4 -inset-y-6 z-0 scale-95 bg-zinc-50 opacity-0 transition group-hover:scale-100 group-hover:opacity-100 dark:bg-zinc-800/50 sm:-inset-x-6 sm:rounded-2xl" />
+
+              <div class="relative z-10 mb-4 w-full text-center sm:text-left">
+                <div class="mb-4 text-4xl">{value.icon}</div>
+                <h3 class="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-100 sm:text-xl">
+                  {value.title}
+                </h3>
+              </div>
+
+              <p class="theme-transition-color relative z-10 w-full text-center text-sm leading-relaxed text-zinc-600 dark:text-zinc-400 sm:text-left">
+                {value.description}
+              </p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Ways to Engage -->
+  <section
+    class="theme-transition-all border-t border-zinc-100 px-4 py-10 dark:border-zinc-800 sm:px-6 sm:py-12 md:py-16"
+  >
+    <div class="mx-auto max-w-4xl">
+      <div
+        class="mb-6 flex flex-col justify-between gap-4 sm:mb-8 sm:flex-row sm:items-center md:mb-12"
+      >
+        <h2
+          class="theme-transition-color text-center text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-left sm:text-2xl md:text-3xl"
+        >
+          Join the Conversation
+        </h2>
+      </div>
+
+      <div class="space-y-8">
+        {
+          engagementOptions.map((option, index) => (
+            <article class="group relative">
+              <div
+                class={`absolute -inset-x-4 -inset-y-6 z-0 scale-95 bg-gradient-to-r ${option.color} theme-transition-bg border-2 opacity-0 transition group-hover:scale-100 group-hover:opacity-100 sm:-inset-x-6 sm:rounded-2xl`}
+              />
+
+              <div class="relative z-10 p-6 sm:p-8">
+                <div class="flex flex-col items-start gap-6 text-center sm:flex-row sm:text-left">
+                  <div class="mx-auto text-4xl sm:mx-0">{option.icon}</div>
+                  <div class="flex-1">
+                    <h3 class="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-100 sm:text-xl">
+                      {option.title}
+                    </h3>
+                    <p class="mb-4 leading-relaxed text-zinc-600 dark:text-zinc-400">
+                      {option.description}
+                    </p>
+
+                    {option.title === 'Follow Us on Social Media' ? (
+                      <div class="flex flex-wrap justify-center gap-4 sm:justify-start" id="social">
+                        <a
+                          href="https://twitter.com/tinkbytehq"
+                          target="_blank"
+                          class="group-link theme-transition-color relative flex min-h-[44px] items-center rounded-md bg-blue-500 px-4 py-2 text-sm font-medium text-white text-zinc-700 transition-colors hover:bg-blue-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100"
+                        >
+                          Twitter
+                        </a>
+                        <a
+                          href="https://linkedin.com/company/tinkbytehq"
+                          target="_blank"
+                          class="group-link theme-transition-color relative flex min-h-[44px] items-center rounded-md bg-blue-700 px-4 py-2 text-sm font-medium text-white text-zinc-700 transition-colors hover:bg-blue-800 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100"
+                        >
+                          LinkedIn
+                        </a>
+                        <a
+                          href="https://instagram.com/tinkbytehq"
+                          target="_blank"
+                          class="group-link theme-transition-color relative flex min-h-[44px] items-center rounded-md bg-pink-500 px-4 py-2 text-sm font-medium text-white text-zinc-700 transition-colors hover:bg-pink-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100"
+                        >
+                          Instagram
+                        </a>
+                        <a
+                          href="https://youtube.com/@tinkbytehq"
+                          target="_blank"
+                          class="group-link theme-transition-color relative flex min-h-[44px] items-center rounded-md bg-red-500 px-4 py-2 text-sm font-medium text-white text-zinc-700 transition-colors hover:bg-red-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100"
+                        >
+                          YouTube
+                        </a>
+                      </div>
+                    ) : (
+                      <a
+                        href={option.link}
+                        class="group-link theme-transition-color relative mx-auto flex min-h-[44px] w-fit items-center text-sm font-medium text-zinc-700 transition-colors hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100 sm:mx-0"
+                      >
+                        <span class="relative inline-block overflow-hidden">
+                          <span class="block transition-transform duration-300 group-hover:-translate-y-full">
+                            {option.cta}
+                          </span>
+                          <span class="absolute left-0 top-0 translate-y-full whitespace-nowrap transition-transform duration-300 group-hover:translate-y-0">
+                            Let's connect
+                          </span>
+                        </span>
+                        <svg
+                          viewBox="0 0 16 16"
+                          fill="none"
+                          aria-hidden="true"
+                          class="ml-1 h-4 w-4 stroke-current transition-transform duration-300 group-hover:translate-x-1"
+                        >
+                          <path
+                            d="M6.75 5.75 9.25 8l-2.5 2.25"
+                            stroke-width="1.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                        </svg>
+                      </a>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Community Guidelines -->
+  <section
+    class="theme-transition-all border-t border-zinc-100 px-4 py-10 dark:border-zinc-800 sm:px-6 sm:py-12 md:py-16"
+  >
+    <div class="mx-auto max-w-4xl">
+      <div
+        class="mb-6 flex flex-col justify-between gap-4 sm:mb-8 sm:flex-row sm:items-center md:mb-12"
+      >
+        <h2
+          class="theme-transition-color text-center text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-left sm:text-2xl md:text-3xl"
+        >
+          Community Guidelines
+        </h2>
+      </div>
+
+      <div class="relative">
+        <div
+          class="theme-transition-bg absolute -inset-x-4 -inset-y-6 z-0 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50"
+        >
+        </div>
+        <div class="relative z-10 p-6 sm:p-8">
+          <div class="grid gap-8 md:grid-cols-2">
+            <div>
+              <h3
+                class="mb-4 flex items-center text-lg font-semibold text-zinc-900 dark:text-zinc-100"
+              >
+                <span class="mr-2 text-green-500">✅</span>
+                We Encourage
+              </h3>
+              <ul class="space-y-2 text-zinc-600 dark:text-zinc-400">
+                {
+                  guidelines.encourage.map((item) => (
+                    <li class="flex items-start">
+                      <span class="mr-2 mt-0.5 text-green-500">•</span>
+                      <span class="text-sm leading-relaxed">{item}</span>
+                    </li>
+                  ))
+                }
+              </ul>
+            </div>
+
+            <div>
+              <h3
+                class="mb-4 flex items-center text-lg font-semibold text-zinc-900 dark:text-zinc-100"
+              >
+                <span class="mr-2 text-red-500">❌</span>
+                We Discourage
+              </h3>
+              <ul class="space-y-2 text-zinc-600 dark:text-zinc-400">
+                {
+                  guidelines.discourage.map((item) => (
+                    <li class="flex items-start">
+                      <span class="mr-2 mt-0.5 text-red-500">•</span>
+                      <span class="text-sm leading-relaxed">{item}</span>
+                    </li>
+                  ))
+                }
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Call to Action -->
+  <section
+    class="theme-transition-all border-t border-zinc-100 px-4 py-10 dark:border-zinc-800 sm:px-6 sm:py-12 md:py-16"
+  >
+    <div class="mx-auto max-w-3xl text-center">
+      <div class="relative">
+        <div
+          class="theme-transition-bg absolute -inset-x-4 -inset-y-6 z-0 rounded-2xl bg-gradient-to-r from-zinc-900 to-zinc-800 dark:from-zinc-100 dark:to-zinc-200"
+        >
+        </div>
+        <div class="relative z-10 p-8 text-white dark:text-zinc-900 sm:p-12">
+          <h2 class="mb-4 text-xl font-bold sm:text-2xl md:text-3xl">
+            Ready to Cut Through the Noise?
+          </h2>
+          <p class="mb-8 text-lg leading-relaxed opacity-90 sm:text-xl">
+            Join a community of builders who value substance over style.
+          </p>
+          <a
+            href="/#newsletter"
+            class="group relative inline-flex min-h-[44px] items-center gap-2 rounded-md bg-white px-8 py-4 text-sm font-medium text-zinc-900 transition-all duration-300 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800"
+          >
+            <span class="relative inline-block overflow-hidden">
+              <span class="block transition-transform duration-300 group-hover:-translate-y-full"
+                >Join TinkByte Community</span
+              >
+              <span
+                class="absolute left-0 top-0 translate-y-full whitespace-nowrap transition-transform duration-300 group-hover:translate-y-0"
+                >Let's build together</span
+              >
+            </span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"></path>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  /* Matching styles from homepage */
+  .animate-blob {
+    animation: blob 7s infinite;
+  }
+
+  .animation-delay-2000 {
+    animation-delay: 2s;
+  }
+
+  @keyframes blob {
+    0% {
+      transform: translate(0px, 0px) scale(1);
+    }
+    33% {
+      transform: translate(30px, -50px) scale(1.1);
+    }
+    66% {
+      transform: translate(-20px, 20px) scale(0.9);
+    }
+    100% {
+      transform: translate(0px, 0px) scale(1);
+    }
+  }
+
+  .hover-3d {
+    transition: transform 0.3s ease;
+  }
+
+  .hover-3d:hover {
+    transform: translateY(-2px);
+  }
+
+  .hero-text span {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity 0.8s ease,
+      transform 0.8s ease;
+  }
+
+  .animate-reveal {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const animateContent = () => {
+      const heroElements = document.querySelectorAll('.hero-text span, .hero-text + p');
+      heroElements.forEach((el, index) => {
+        setTimeout(
+          () => {
+            el.classList.add('animate-reveal');
+          },
+          100 + index * 150
+        );
+      });
+
+      const articles = document.querySelectorAll('article.group');
+      articles.forEach((article, index) => {
+        setTimeout(
+          () => {
+            article.classList.add('animate-reveal');
+          },
+          500 + index * 150
+        );
+      });
+    };
+
+    animateContent();
+  });
+</script>

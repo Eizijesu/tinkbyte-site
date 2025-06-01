@@ -1,0 +1,10 @@
+name: main
+siteTitle: "TinkByte"
+siteDescription: "The tech publication that cuts through the noise."
+socialMedia:
+  twitter: "https://twitter.com/tinkbytehq"
+  github: "https://github.com/eizijesu"
+newsletter:
+  enabled: true
+  title: "Join the TinkByte Community"
+  description: "Get authentic insights delivered to your inbox."
