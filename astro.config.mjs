@@ -21,7 +21,7 @@ const getSiteURL = () => {
 // https://astro.build/config
 export default defineConfig({
   site: getSiteURL(),
-  output: 'static', // Perfect for Cloudflare Pages + Keystatic
+  output: 'static',
   integrations: [
     tailwind(),
     react(),
@@ -32,17 +32,6 @@ export default defineConfig({
     define: {
       // Public environment variables for client-side
       'import.meta.env.PUBLIC_SITE_URL': JSON.stringify(getSiteURL()),
-    },
-  },
-  // Optimize for static deployment
-  build: {
-    inlineStylesheets: 'auto',
-    assets: 'assets',
-  },
-  // Image optimization for static builds
-  image: {
-    service: {
-      entrypoint: 'astro/assets/services/sharp',
     },
   },
 });
