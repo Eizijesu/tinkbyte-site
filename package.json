@@ -11,7 +11,8 @@
     "astro": "astro",
     "tina:dev": "tinacms dev",
     "tina:build": "tinacms build",
-    "tina:init": "tinacms init"
+    "tina:init": "tinacms init",
+    "cf:build": "npm install --legacy-peer-deps && npm run build"
   },
   "dependencies": {
     "@astrojs/mdx": "4.2.3",
@@ -22,8 +23,8 @@
     "@tinacms/auth": "1.0.12",
     "@tinacms/cli": "1.9.8",
     "astro": "5.5.6",
-    "react": "18.3.0",
-    "react-dom": "18.3.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
     "reading-time": "1.5.0",
     "sanitize-html": "2.15.0",
     "tailwindcss": "^3.3.3",
