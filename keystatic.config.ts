@@ -10,7 +10,7 @@ export default config({
   },
   collections: {
     posts: collection({
-      label: 'Blog Posts',
+      label: 'Tinkbyte Magazine',
       slugField: 'title',
       path: 'src/content/blog/*',
       format: { contentField: 'content' },
