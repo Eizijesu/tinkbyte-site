@@ -28,3 +28,6 @@ pnpm-debug.log*
 .astro/
 
 .vercel
+
+node_modules
+.env
