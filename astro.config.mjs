@@ -1,34 +1,23 @@
 import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
-import react from '@astrojs/react'; // Add this line
+import react from '@astrojs/react';
 
-// Determine site URL based on environment
 const getSiteURL = () => {
-  // For Vercel production deployment
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`;
+  if (process.env.CF_PAGES_URL || process.env.NODE_ENV === 'production') {
+    return 'https://tinkbyte.com';
   }
-  // For Vercel preview deployment
-  if (process.env.VERCEL_BRANCH_URL) {
-    return `https://${process.env.VERCEL_BRANCH_URL}`;
+  if (process.env.CF_PAGES_BRANCH && process.env.CF_PAGES_BRANCH !== 'main') {
+    return process.env.CF_PAGES_URL || 'https://preview.tinkbyte.com';
   }
-  // For local development
   return 'http://localhost:4321';
 };
 
-// https://astro.build/config
 export default defineConfig({
   site: getSiteURL(),
+  output: 'static',
   integrations: [
     tailwind(),
     react(),
+    // keystatic(), // Temporarily removed
   ],
-  vite: {
-    // Đảm bảo biến môi trường được chuyển đến client
-    define: {
-      'import.meta.env.SPOTIFY_CLIENT_ID': JSON.stringify(process.env.SPOTIFY_CLIENT_ID),
-      'import.meta.env.SPOTIFY_CLIENT_SECRET': JSON.stringify(process.env.SPOTIFY_CLIENT_SECRET),
-      'import.meta.env.SPOTIFY_REFRESH_TOKEN': JSON.stringify(process.env.SPOTIFY_REFRESH_TOKEN),
-    },
-  },
 });

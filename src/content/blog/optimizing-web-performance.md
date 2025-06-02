@@ -1,10 +1,14 @@
 ---
-title: "Optimizing Web Performance for Better UX"
+title: optimizing-web-performance-for-better-ux
 description: "Tips and techniques for improving your website's performance and providing a better user experience."
 pubDate: 2023-01-18
-heroImage: "/i.jpg"
+author: "TinkByte Team"
+heroImage: "/images/blog/i.jpg"
 readingTime: "8 min read"
-tags: ["performance", "web development", "user experience"]
+tags: ["performance", "web-development", "user-experience"]
+featured: false
+draft: false
+excerpt: "Learn practical strategies to optimize your website's performance, improve Core Web Vitals, and provide better user experience through proven techniques."
 ---
 
 # Optimizing Web Performance for Better UX
@@ -49,4 +53,3 @@ Images often account for most of the downloaded bytes on a webpage. Optimizing t
   alt="Description" 
   loading="lazy" 
 />
-```

@@ -18,6 +18,8 @@
     "@astrojs/rss": "3.0.0",
     "@astrojs/sitemap": "^3.0.0",
     "@astrojs/tailwind": "6.0.2",
+    "@keystatic/astro": "5.0.6",
+    "@keystatic/core": "0.5.47",
     "astro": "5.5.6",
     "framer-motion": "12.6.3",
     "react": "19.1.0",

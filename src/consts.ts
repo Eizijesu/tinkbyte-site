@@ -1,5 +1,4 @@
-// Place any global data in this file.
-// You can import this data from anywhere in your site by using the `import` keyword.
-
-export const SITE_TITLE = 'My Astro Blog';
-export const SITE_DESCRIPTION = 'Welcome to my blog built with Astro';
+// src/consts.ts
+export const SITE_TITLE = 'TinkByte';
+export const SITE_DESCRIPTION = 'The tech publication that cuts through the noise. Authentic insights for builders who value substance over hype.';
+export const SITE_URL = 'https://tinkbyte.com';

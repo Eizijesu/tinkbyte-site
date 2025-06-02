@@ -1,20 +1,19 @@
 import { defineCollection, z } from 'astro:content';
 
-const blogCollection = defineCollection({
+const blog = defineCollection({
   type: 'content',
   schema: z.object({
     title: z.string(),
     description: z.string(),
-    pubDate: z.date(),
-    updatedDate: z.date().optional(),
+    pubDate: z.coerce.date(),
+    author: z.string().default('TinkByte Team'),
     heroImage: z.string().optional(),
-    tags: z.array(z.string()).optional(),
-    // Thêm readingTime vào schema nhưng đặt là optional
     readingTime: z.string().optional(),
-  }),
+    tags: z.array(z.string()).default([]),
+    featured: z.boolean().default(false),
+    draft: z.boolean().default(false),
+    excerpt: z.string().optional(), // Add this for RSS
+  })
 });
 
-export const collections = {
-  'blog': blogCollection,
-};
-
+export const collections = { blog };

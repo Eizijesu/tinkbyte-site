@@ -7,12 +7,48 @@ import '../styles/global.css';
 export interface Props {
   title: string;
   description?: string;
+  heroImage?: string;
+  author?: string;
+  pubDate?: Date;
+  tags?: string[];
 }
 
-const { title, description = "A minimalist personal blog" } = Astro.props;
+const {
+  title,
+  description = 'The tech publication that cuts through the noise',
+  heroImage,
+  author,
+  pubDate,
+  tags,
+} = Astro.props;
+
+// Generate structured data for blog posts
+const structuredData =
+  heroImage && author && pubDate
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'BlogPosting',
+        headline: title,
+        description: description,
+        image: heroImage,
+        author: {
+          '@type': 'Person',
+          name: author,
+        },
+        datePublished: pubDate.toISOString(),
+        publisher: {
+          '@type': 'Organization',
+          name: 'TinkByte',
+          logo: {
+            '@type': 'ImageObject',
+            url: `${Astro.site}favicon.svg`,
+          },
+        },
+      }
+    : null;
 ---
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -20,34 +56,77 @@ const { title, description = "A minimalist personal blog" } = Astro.props;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content={heroImage ? 'article' : 'website'} />
+    <meta property="og:url" content={Astro.url} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    {heroImage && <meta property="og:image" content={heroImage} />}
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={Astro.url} />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+    {heroImage && <meta property="twitter:image" content={heroImage} />}
+
+    <!-- Article specific meta tags -->
+    {author && <meta name="author" content={author} />}
+    {pubDate && <meta property="article:published_time" content={pubDate.toISOString()} />}
+    {tags && tags.map((tag) => <meta property="article:tag" content={tag} />)}
+
+    <!-- Structured Data -->
+    {
+      structuredData && (
+        <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+      )
+    }
+
     <title>{title}</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- RSS Feed -->
+    <link rel="alternate" type="application/rss+xml" title="TinkByte RSS Feed" href="/rss.xml" />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href={Astro.url} />
   </head>
-  <body class="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 min-h-screen flex flex-col">
+  <body
+    class="flex min-h-screen flex-col bg-white font-space-grotesk text-zinc-900 dark:bg-zinc-900 dark:text-zinc-100"
+  >
     <!-- Page transition overlay - for smooth transitions between pages -->
-    <div id="page-transition" class="fixed inset-0 z-40 bg-white dark:bg-zinc-900 opacity-0 pointer-events-none transition-opacity duration-300 flex items-center justify-center">
+    <div
+      id="page-transition"
+      class="pointer-events-none fixed inset-0 z-40 flex items-center justify-center bg-white opacity-0 transition-opacity duration-300 dark:bg-zinc-900"
+    >
       <div class="transition-spinner"></div>
     </div>
-    
+
     <!-- Background component with dot pattern and ambient glow -->
     <Background />
-    
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 w-full flex-grow">
+
+    <div class="mx-auto w-full max-w-5xl flex-grow px-4 sm:px-6">
       <Navigation />
       <main class="py-12">
         <slot />
       </main>
     </div>
     <Footer />
-    
+
     <script>
       // Enhanced SPA transition system with history API
       document.addEventListener('DOMContentLoaded', () => {
         const pageTransition = document.getElementById('page-transition');
         const mainContent = document.querySelector('main');
-        
+
         // Initialize content with entrance animation
         if (mainContent) {
           mainContent.classList.add('content-entering');
@@ -55,61 +134,70 @@ const { title, description = "A minimalist personal blog" } = Astro.props;
             mainContent.classList.remove('content-entering');
           }, 800);
         }
-        
+
         // Function to load content via fetch
         async function loadContent(url) {
           try {
+            // Skip SPA navigation for Keystatic admin routes
+            if (url.includes('/keystatic')) {
+              window.location.href = url;
+              return;
+            }
+
             // Show transition overlay
             if (pageTransition) {
               pageTransition.classList.remove('opacity-0', 'pointer-events-none');
               pageTransition.classList.add('opacity-100');
             }
-            
+
             // Fade out current content
             if (mainContent) {
               mainContent.style.opacity = '0';
               mainContent.style.transform = 'translateY(10px)';
             }
-            
+
             // Fetch the new page content
             const response = await fetch(url);
             if (!response.ok) throw new Error(`Failed to fetch ${url}`);
             const html = await response.text();
-            
+
             // Create a temporary element to parse the HTML
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
-            
+
             // Extract the main content
             const newContent = doc.querySelector('main');
             if (!newContent) throw new Error('Could not find main content in the fetched page');
-            
+
             // Extract the title
             const newTitle = doc.querySelector('title');
             if (newTitle) {
               document.title = newTitle.textContent;
             }
-            
+
             // Extract meta description
             const newDescription = doc.querySelector('meta[name="description"]');
             if (newDescription) {
               const currentDescription = document.querySelector('meta[name="description"]');
               if (currentDescription) {
-                currentDescription.setAttribute('content', newDescription.getAttribute('content') || '');
+                currentDescription.setAttribute(
+                  'content',
+                  newDescription.getAttribute('content') || ''
+                );
               }
             }
-            
+
             // Wait a bit for transition effect
-            await new Promise(resolve => setTimeout(resolve, 300));
-            
+            await new Promise((resolve) => setTimeout(resolve, 300));
+
             // Replace the content
             if (mainContent && newContent) {
               mainContent.innerHTML = newContent.innerHTML;
-              
+
               // Run scripts in the new content
-              Array.from(newContent.querySelectorAll('script')).forEach(oldScript => {
+              Array.from(newContent.querySelectorAll('script')).forEach((oldScript) => {
                 const newScript = document.createElement('script');
-                Array.from(oldScript.attributes).forEach(attr => {
+                Array.from(oldScript.attributes).forEach((attr) => {
                   newScript.setAttribute(attr.name, attr.value);
                 });
                 newScript.textContent = oldScript.textContent;
@@ -118,17 +206,17 @@ const { title, description = "A minimalist personal blog" } = Astro.props;
                 }
               });
             }
-            
+
             // Fade in new content with animation
             if (mainContent) {
               mainContent.style.opacity = '0';
               mainContent.style.transform = 'translateY(10px)';
-              
+
               setTimeout(() => {
                 mainContent.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
                 mainContent.style.opacity = '1';
                 mainContent.style.transform = 'translateY(0)';
-                
+
                 // Add entrance animation class
                 mainContent.classList.add('content-entering');
                 setTimeout(() => {
@@ -136,7 +224,7 @@ const { title, description = "A minimalist personal blog" } = Astro.props;
                 }, 800);
               }, 50);
             }
-            
+
             // Hide transition overlay
             if (pageTransition) {
               setTimeout(() => {
@@ -144,34 +232,36 @@ const { title, description = "A minimalist personal blog" } = Astro.props;
                 pageTransition.classList.remove('opacity-100');
               }, 200);
             }
-            
+
             // Dispatch custom event for content loaded
-            document.dispatchEvent(new CustomEvent('spa-content-loaded', { 
-              detail: { url }
-            }));
-            
+            document.dispatchEvent(
+              new CustomEvent('spa-content-loaded', {
+                detail: { url },
+              })
+            );
+
             // Scroll to top or to saved position
             window.scrollTo(0, 0);
-            
+
             // Re-attach event listeners to new content
             attachLinkListeners();
-            
           } catch (error) {
             console.error('Error loading content:', error);
-            
+
             // Fallback to traditional navigation on error
             window.location.href = url;
           }
         }
-        
+
         // Function to attach event listeners to all links
         function attachLinkListeners() {
-          document.querySelectorAll('a').forEach(link => {
-            // Skip links that are already handled, anchor links, external links, or have special attributes
+          document.querySelectorAll('a').forEach((link) => {
+            // Skip links that are already handled, anchor links, external links, Keystatic routes, or have special attributes
             if (
               link.hasAttribute('data-spa-handled') ||
-              !link.href.startsWith(window.location.origin) || 
+              !link.href.startsWith(window.location.origin) ||
               link.href.includes('#') ||
+              link.href.includes('/keystatic') ||
               link.hasAttribute('target') ||
               link.hasAttribute('download') ||
               link.getAttribute('rel') === 'external' ||
@@ -179,36 +269,36 @@ const { title, description = "A minimalist personal blog" } = Astro.props;
             ) {
               return;
             }
-            
+
             // Mark as handled to avoid duplicate listeners
             link.setAttribute('data-spa-handled', 'true');
-            
+
             link.addEventListener('click', (e) => {
               // Don't handle if modifier keys are pressed (for opening in new tab, etc.)
               if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) {
                 return;
               }
-              
+
               e.preventDefault();
               const targetHref = link.href;
-              
+
               // Don't transition if clicking the current page
               if (targetHref === window.location.href) {
                 return;
               }
-              
+
               // Update browser history
               window.history.pushState({ path: targetHref }, '', targetHref);
-              
+
               // Load the new content
               loadContent(targetHref);
             });
           });
         }
-        
+
         // Initial attachment of link listeners
         attachLinkListeners();
-        
+
         // Handle browser back/forward navigation
         window.addEventListener('popstate', (e) => {
           if (e.state && e.state.path) {
@@ -217,7 +307,7 @@ const { title, description = "A minimalist personal blog" } = Astro.props;
             loadContent(window.location.href);
           }
         });
-        
+
         // Check RSS feed availability
         const checkAndGenerateRSS = async () => {
           try {
@@ -229,33 +319,36 @@ const { title, description = "A minimalist personal blog" } = Astro.props;
             console.warn('Could not check RSS feed status.');
           }
         };
-        
+
         // Check RSS feed availability
         checkAndGenerateRSS();
       });
-      
+
       // Theme handling with transition effects
       function setupThemeHandling() {
         // Apply theme from localStorage or system preference
         const theme = localStorage.getItem('theme');
-        if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        if (
+          theme === 'dark' ||
+          (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)
+        ) {
           document.documentElement.classList.add('dark');
         } else {
           document.documentElement.classList.remove('dark');
         }
-        
+
         // Listen for theme changes
         document.addEventListener('themeChanged', () => {
           // Add transition class to body
           document.body.classList.add('theme-transitioning');
-          
+
           // Remove class after transition completes
           setTimeout(() => {
             document.body.classList.remove('theme-transitioning');
           }, 500);
         });
       }
-      
+
       // Initialize theme handling
       document.addEventListener('DOMContentLoaded', setupThemeHandling);
     </script>
@@ -268,7 +361,7 @@ const { title, description = "A minimalist personal blog" } = Astro.props;
     transition: opacity 0.3s ease;
     backdrop-filter: blur(4px);
   }
-  
+
   /* Transition spinner animation */
   .transition-spinner {
     width: 30px;
@@ -278,27 +371,31 @@ const { title, description = "A minimalist personal blog" } = Astro.props;
     border-top-color: #3b82f6;
     animation: spin 0.7s linear infinite;
   }
-  
+
   :global(.dark) .transition-spinner {
     border-color: rgba(255, 255, 255, 0.1);
     border-top-color: #60a5fa;
   }
-  
+
   @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+      transform: rotate(360deg);
+    }
   }
-  
+
   /* Content entrance animation */
   main {
     opacity: 1;
     transform: translateY(0);
-    transition: opacity 0.5s ease, transform 0.5s ease;
+    transition:
+      opacity 0.5s ease,
+      transform 0.5s ease;
   }
-  
+
   main.content-entering {
     animation: content-fade-in 0.6s ease forwards;
   }
-  
+
   @keyframes content-fade-in {
     from {
       opacity: 0;
@@ -309,9 +406,14 @@ const { title, description = "A minimalist personal blog" } = Astro.props;
       transform: translateY(0);
     }
   }
-  
+
   /* Theme transition effect */
   body.theme-transitioning * {
     transition-duration: 0.3s !important;
+  }
+
+  /* Ensure Space Grotesk is applied */
+  .font-space-grotesk {
+    font-family: 'Space Grotesk', sans-serif;
   }
 </style>
